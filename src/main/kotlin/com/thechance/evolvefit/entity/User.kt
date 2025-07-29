@@ -2,15 +2,15 @@ package com.thechance.evolvefit.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import org.intellij.lang.annotations.Identifier
-import java.util.UUID
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
+@Table(name = "users")
 data class User(
-    @Identifier
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: UUID = UUID.randomUUID(),
-    val userName: String,
-    val password: String,
+    @Id
+    @GeneratedValue
+    val id: Long = 0,
+    val username: String = "",
+    val password: String = "",
 )
