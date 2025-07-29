@@ -4,12 +4,12 @@ import com.thechance.evolvefit.entity.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
 import java.util.Date
 
-@Component
+@Service
 class JwtService {
     private val secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
     private val accessExpiration = Duration.ofHours(1)

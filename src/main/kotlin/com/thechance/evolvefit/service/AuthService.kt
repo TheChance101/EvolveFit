@@ -16,15 +16,18 @@ class AuthService(
     private val refreshRepo: RefreshTokenRepository,
     private val tokenService: TokenService,
     private val jwtService: JwtService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val userValidator: UserValidator
 ) {
     fun signup(request: AuthRequest): AuthResponse {
+        userValidator.validate(request.username, request.password)
+
         userRepo.findByUsername(request.username)?.let {
             throw IllegalStateException("Username already exists")
         }
 
         val user = User(
-            username = request.username,
+            username = request.username.trim(),
             password = passwordEncoder.encode(request.password)
         )
         userRepo.saveAndFlush( user)
@@ -32,8 +35,11 @@ class AuthService(
     }
 
     fun login(request: AuthRequest): AuthResponse {
+        userValidator.validate(request.username, request.password)
+
         val user = userRepo.findByUsername(request.username)
             ?: throw UsernameNotFoundException("User not found")
+
         if (!passwordEncoder.matches(request.password, user.password)) throw BadCredentialsException("Invalid")
         return generateAuthResponse(user)
     }
