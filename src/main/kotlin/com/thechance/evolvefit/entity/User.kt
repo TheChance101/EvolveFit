@@ -11,6 +11,6 @@ data class User(
     @Id
     @GeneratedValue
     val id: Long = 0,
-    val username: String = "",
-    val password: String = "",
+    val username: String,
+    val password: String,
 )
