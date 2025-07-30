@@ -2,13 +2,19 @@ package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.dto.AuthRequest
 import com.thechance.evolvefit.dto.AuthResponse
+import com.thechance.evolvefit.dto.CreateUserRequest
+import com.thechance.evolvefit.entity.Gender
+import com.thechance.evolvefit.entity.Goal
+import com.thechance.evolvefit.entity.MeasurementType
 import com.thechance.evolvefit.entity.User
+import com.thechance.evolvefit.entity.WorkoutDays
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class AuthService(
@@ -19,7 +25,7 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val userValidator: UserValidator
 ) {
-    fun signup(request: AuthRequest): AuthResponse {
+    fun signup(request: CreateUserRequest): AuthResponse {
         userValidator.validate(request.username, request.password)
 
         userRepo.findByUsername(request.username)?.let {
@@ -28,7 +34,14 @@ class AuthService(
 
         val user = User(
             username = request.username.trim(),
-            password = passwordEncoder.encode(request.password)
+            password = passwordEncoder.encode(request.password),
+            birthday = LocalDate.parse(request.birthdate),
+            gender = Gender.valueOf(request.gender),
+            measurementType = MeasurementType.valueOf(request.measurementType),
+            height = request.height,
+            weight = request.weight,
+            goal = Goal.valueOf(request.goal),
+            workoutDays = request.workoutDays.map { WorkoutDays.valueOf(it) }.toSet(),
         )
         userRepo.saveAndFlush( user)
         return generateAuthResponse(user)

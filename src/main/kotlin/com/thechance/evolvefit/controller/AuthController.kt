@@ -2,6 +2,7 @@ package com.thechance.evolvefit.controller
 
 import com.thechance.evolvefit.dto.AuthRequest
 import com.thechance.evolvefit.dto.AuthResponse
+import com.thechance.evolvefit.dto.CreateUserRequest
 import com.thechance.evolvefit.service.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,7 +17,7 @@ class AuthController(
 ) {
 
     @PostMapping("/signup")
-    fun signup(@RequestBody request: AuthRequest): ResponseEntity<AuthResponse> =
+    fun signup(@RequestBody request: CreateUserRequest): ResponseEntity<AuthResponse> =
         ResponseEntity.ok(authService.signup(request))
 
     @PostMapping("/login")
