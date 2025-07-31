@@ -3,11 +3,8 @@ package com.thechance.evolvefit.service
 import com.thechance.evolvefit.dto.AuthRequest
 import com.thechance.evolvefit.dto.AuthResponse
 import com.thechance.evolvefit.dto.CreateUserRequest
-import com.thechance.evolvefit.entity.Gender
-import com.thechance.evolvefit.entity.Goal
-import com.thechance.evolvefit.entity.MeasurementType
-import com.thechance.evolvefit.entity.User
-import com.thechance.evolvefit.entity.WorkoutDays
+import com.thechance.evolvefit.entity.*
+import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
 import org.springframework.security.authentication.BadCredentialsException
@@ -23,7 +20,8 @@ class AuthService(
     private val tokenService: TokenService,
     private val jwtService: JwtService,
     private val passwordEncoder: PasswordEncoder,
-    private val userValidator: UserValidator
+    private val userValidator: UserValidator,
+    private val gymEquipmentsRepository: GymEquipmentsRepository
 ) {
     fun signup(request: CreateUserRequest): AuthResponse {
         userValidator.validate(request.username, request.password)
@@ -42,6 +40,9 @@ class AuthService(
             weight = request.weight,
             goal = Goal.valueOf(request.goal),
             workoutDays = request.workoutDays.map { WorkoutDays.valueOf(it) }.toSet(),
+            gymEquipments = if (request.gymEquipments.isNotEmpty()) {
+                request.gymEquipments.map { gymEquipmentsRepository.findById(it).get() }
+            } else emptyList()
         )
         userRepo.saveAndFlush( user)
         return generateAuthResponse(user)

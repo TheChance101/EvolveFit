@@ -14,4 +14,5 @@ data class CreateUserRequest(
     val goal: String,
     val tools: List<String>,
     val workoutDays: List<String>,
+    val gymEquipments: List<Long>
 )
