@@ -3,6 +3,7 @@ package com.thechance.evolvefit.controller
 import com.thechance.evolvefit.dto.AuthRequest
 import com.thechance.evolvefit.dto.AuthResponse
 import com.thechance.evolvefit.dto.CreateUserRequest
+import com.thechance.evolvefit.dto.RefreshRequest
 import com.thechance.evolvefit.service.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,8 +26,7 @@ class AuthController(
         ResponseEntity.ok(authService.login(request))
 
     @PostMapping("/refresh")
-    fun refresh(@RequestBody request: Map<String, String>): ResponseEntity<AuthResponse> {
-        val refreshToken = request["refreshToken"] ?: return ResponseEntity.badRequest().build()
-        return ResponseEntity.ok(authService.refresh(refreshToken))
+    fun refresh(@RequestBody request: RefreshRequest): ResponseEntity<AuthResponse> {
+        return ResponseEntity.ok(authService.refresh(request.refreshToken))
     }
 }
