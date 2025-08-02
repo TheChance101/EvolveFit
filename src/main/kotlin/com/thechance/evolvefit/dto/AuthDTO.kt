@@ -13,7 +13,6 @@ data class CreateUserRequest(
     val height: Float,
     val weight: Float,
     val goal: String,
-    val tools: List<String>,
     val workoutDays: List<String>,
     val gymEquipments: List<Long>
 )
