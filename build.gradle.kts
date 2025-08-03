@@ -36,6 +36,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+
+    implementation("com.cloudinary:cloudinary-http44:1.39.0")
 }
 
 kotlin {
