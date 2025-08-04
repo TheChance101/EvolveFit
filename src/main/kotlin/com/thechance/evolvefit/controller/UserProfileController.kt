@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 @RestController
 @RequestMapping("/user/profile")
@@ -17,8 +18,8 @@ class UserProfileController(
 
     @PostMapping("/image")
     fun uploadProfileImage(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        val username = SecurityContextHolder.getContext().authentication.principal as String
-        val imageUrl = imageUploadService.uploadUserProfileImage(username, file)
+        val userId = SecurityContextHolder.getContext().authentication.principal as UUID
+        val imageUrl = imageUploadService.uploadUserProfileImage(userId, file)
         return ResponseEntity.ok(imageUrl)
     }
 }

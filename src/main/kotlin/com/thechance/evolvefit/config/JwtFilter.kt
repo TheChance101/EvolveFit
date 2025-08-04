@@ -22,13 +22,12 @@ class JwtFilter(
     ) {
         val authHeader = request.getHeader("Authorization")
 
-        val token = authHeader?.takeIf { it.startsWith("Bearer ") }
-            ?.removePrefix("Bearer ")?.trim() ?: throw IllegalStateException("Invalid or missing Authorization token")
+        val token = authHeader?.takeIf { it.startsWith("Bearer ") }?.removePrefix("Bearer ")?.trim()
 
-        if (SecurityContextHolder.getContext().authentication == null) {
-            val username = jwtService.extractUsername(token)
+        if (token != null && SecurityContextHolder.getContext().authentication == null) {
+            val userId = jwtService.extractUserId(token)
             val authentication = UsernamePasswordAuthenticationToken(
-                username,
+                userId,
                 null,
                 emptyList()
             )

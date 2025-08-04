@@ -27,17 +27,20 @@ class JwtService {
 
     fun generateToken(user: User): String =
         Jwts.builder()
-            .setSubject(user.username)
+            .setSubject(user.id.toString())
             .setIssuedAt(Date())
             .setExpiration(Date.from(Instant.now().plus(accessExpiration)))
             .signWith(secretKey)
             .compact()
 
-    fun extractUsername(token: String): String =
-        Jwts.parserBuilder()
+    fun extractUserId(token: String): UUID {
+        val subject = Jwts.parserBuilder()
             .setSigningKey(secretKey)
             .build()
             .parseClaimsJws(token)
             .body
             .subject
+
+        return UUID.fromString(subject)
+    }
 }
