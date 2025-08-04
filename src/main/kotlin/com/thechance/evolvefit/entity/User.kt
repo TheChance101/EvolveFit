@@ -41,7 +41,9 @@ data class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "equipment_id")]
     )
-    val gymEquipments: List<GymEquipment> = listOf()
+    val gymEquipments: List<GymEquipment> = listOf(),
+
+    var imageUrl: String = ""
 )
 
 enum class Gender {
