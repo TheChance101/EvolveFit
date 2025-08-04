@@ -2,36 +2,45 @@ package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.entity.User
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import jakarta.annotation.PostConstruct
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
-import java.util.Date
+import java.util.*
+import javax.crypto.SecretKey
 
 @Service
 class JwtService {
-    private val secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
     private val accessExpiration = Duration.ofHours(1)
+
+    @Value("\${jwt.secret-key}")
+    private lateinit var secret: String
+    private lateinit var secretKey: SecretKey
+
+    @PostConstruct
+    fun init() {
+        val decodedKey = Base64.getDecoder().decode(secret)
+        secretKey = Keys.hmacShaKeyFor(decodedKey)
+    }
 
     fun generateToken(user: User): String =
         Jwts.builder()
-            .setSubject(user.username)
+            .setSubject(user.id.toString())
             .setIssuedAt(Date())
             .setExpiration(Date.from(Instant.now().plus(accessExpiration)))
             .signWith(secretKey)
             .compact()
 
-    fun extractUsername(token: String): String =
-        Jwts.parserBuilder()
+    fun extractUserId(token: String): UUID {
+        val subject = Jwts.parserBuilder()
             .setSigningKey(secretKey)
             .build()
             .parseClaimsJws(token)
             .body
             .subject
 
-    fun isTokenValid(token: String, user: User): Boolean {
-        val username = extractUsername(token)
-        return username == user.username
+        return UUID.fromString(subject)
     }
 }

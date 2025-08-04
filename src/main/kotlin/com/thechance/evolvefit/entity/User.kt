@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.entity
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Email
 import java.time.LocalDate
 import java.util.*
 
@@ -11,7 +12,10 @@ data class User(
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     val id: UUID = UUID.randomUUID(),
     @Column(nullable = false)
-    val username: String,
+    val name: String,
+    @Column(nullable = false)
+    @Email
+    val email: String,
     @Column(nullable = false)
     val password: String,
     @Column(nullable = false)
@@ -41,7 +45,9 @@ data class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "equipment_id")]
     )
-    val gymEquipments: List<GymEquipment> = listOf()
+    val gymEquipments: List<GymEquipment> = listOf(),
+
+    var imageUrl: String = ""
 )
 
 enum class Gender {
