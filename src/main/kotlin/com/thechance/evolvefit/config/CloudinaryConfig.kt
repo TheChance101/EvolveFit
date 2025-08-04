@@ -2,27 +2,29 @@ package com.thechance.evolvefit.config
 
 import com.cloudinary.Cloudinary
 import com.cloudinary.utils.ObjectUtils
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
+@ConfigurationProperties(prefix = "cloudinary")
+data class CloudinaryProperties(
+    val cloudName: String,
+    val apiKey: String,
+    val apiSecret: String
+)
+
 @Configuration
+@EnableConfigurationProperties(CloudinaryProperties::class)
 class CloudinaryConfig {
 
-    @Value("\${cloudinary.cloud-name}")
-    private lateinit var cloudName: String
-    @Value("\${cloudinary.api-key}")
-    private lateinit var apiKey: String
-    @Value("\${cloudinary.api-secret}")
-    private lateinit var apiSecret: String
-
     @Bean
-    fun cloudinary(): Cloudinary {
+    fun cloudinary(cloudinaryProperties: CloudinaryProperties): Cloudinary {
         return Cloudinary(
             ObjectUtils.asMap(
-                "cloud_name", cloudName,
-                "api_key", apiKey,
-                "api_secret", apiSecret
+                "cloud_name", cloudinaryProperties.cloudName,
+                "api_key", cloudinaryProperties.apiKey,
+                "api_secret", cloudinaryProperties.apiSecret
             )
         )
     }
