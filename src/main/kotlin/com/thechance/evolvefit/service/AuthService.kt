@@ -8,7 +8,6 @@ import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -20,18 +19,14 @@ class AuthService(
     private val tokenService: TokenService,
     private val jwtService: JwtService,
     private val passwordEncoder: PasswordEncoder,
-    private val userValidator: UserValidator,
     private val gymEquipmentsRepository: GymEquipmentsRepository
 ) {
     fun signup(request: CreateUserRequest): AuthResponse {
-        userValidator.validate(request.username, request.password)
-
-        userRepo.findByUsername(request.username)?.let {
-            throw IllegalStateException("Username already exists")
-        }
+        userRepo.findByEmail(request.email)?.let { throw IllegalStateException("User already exists") }
 
         val user = User(
-            username = request.username.trim(),
+            name = request.fullName.trim(),
+            email = request.email.trim(),
             password = passwordEncoder.encode(request.password),
             birthday = LocalDate.parse(request.birthdate),
             gender = Gender.valueOf(request.gender),
@@ -44,17 +39,16 @@ class AuthService(
                 request.gymEquipments.map { gymEquipmentsRepository.findById(it).get() }
             } else emptyList()
         )
-        userRepo.saveAndFlush( user)
+        userRepo.saveAndFlush(user)
         return generateAuthResponse(user)
     }
 
     fun login(request: AuthRequest): AuthResponse {
-        userValidator.validate(request.username, request.password)
+        val user = userRepo.findByEmail(request.email) ?: throw IllegalStateException("User not found")
 
-        val user = userRepo.findByUsername(request.username)
-            ?: throw UsernameNotFoundException("User not found")
-
-        if (!passwordEncoder.matches(request.password, user.password)) throw BadCredentialsException("Invalid")
+        if (!passwordEncoder.matches(request.password, user.password)) {
+            throw BadCredentialsException("Invalid")
+        }
         return generateAuthResponse(user)
     }
 
