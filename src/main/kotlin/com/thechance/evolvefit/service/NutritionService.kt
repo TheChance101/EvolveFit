@@ -4,10 +4,8 @@ import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
-import com.thechance.evolvefit.service.entity.Gender
-import com.thechance.evolvefit.service.entity.Goal
-import com.thechance.evolvefit.service.entity.MealHistory
-import com.thechance.evolvefit.service.entity.MealType
+import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
+import com.thechance.evolvefit.service.entity.*
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,6 +14,7 @@ import java.util.*
 @Service
 class NutritionService(
     private val mealsHistoryRepository: MealsHistoryRepository,
+    private val waterIntakeHistoryRepository: WaterIntakeHistoryRepository,
     private val userRepository: UserRepository,
 ) {
 
@@ -67,5 +66,19 @@ class NutritionService(
 
     private fun LocalDate.getUserAge(): Int {
         return LocalDate.now().year - this.year
+    }
+
+    fun addWaterIntake(userId: UUID, waterIntakeInLitre: Float) {
+        val waterIntake = WaterInTakeHistory(
+            userId = userId,
+            date = LocalDateTime.now(),
+            waterAmountInLitre = waterIntakeInLitre
+        )
+
+        waterIntakeHistoryRepository.save(waterIntake)
+    }
+
+    fun getWaterIntake(userId: UUID): Float {
+        return waterIntakeHistoryRepository.sumUserWaterIntake(userId)
     }
 }
