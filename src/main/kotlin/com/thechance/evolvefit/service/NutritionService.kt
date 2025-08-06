@@ -2,6 +2,7 @@ package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
+import com.thechance.evolvefit.api.dto.nutrition.MealsGroupResponse
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
@@ -20,6 +21,19 @@ class NutritionService(
 
     fun getAllUserMealsHistory(userId: UUID): List<MealHistory> {
         return mealsHistoryRepository.findAllByUserId(userId)
+    }
+
+    fun getMealsGroupedByMealType(userId: UUID): MealsGroupResponse {
+        val meals = mealsHistoryRepository.findAllByUserId(userId)
+        val mealsGroup = meals.groupBy { it.mealType }
+
+        return MealsGroupResponse(
+            breakfast = mealsGroup[MealType.BREAKFAST]?.sumOf { it.caloriesConsumed } ?: 0,
+            lunch = mealsGroup[MealType.LUNCH]?.sumOf { it.caloriesConsumed } ?: 0,
+            dinner = mealsGroup[MealType.DINNER]?.sumOf { it.caloriesConsumed } ?: 0,
+            snack = mealsGroup[MealType.SNACK]?.sumOf { it.caloriesConsumed } ?: 0,
+            remainingCalories = getUserCaloriesNeeded(userId) - (meals.sumOf { it.caloriesConsumed })
+        )
     }
 
     fun addMeal(userId: UUID, addMealRequest: AddMealRequest): MealHistory {

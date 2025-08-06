@@ -2,6 +2,7 @@ package com.thechance.evolvefit.api.controller.nutrition
 
 import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
+import com.thechance.evolvefit.api.dto.nutrition.MealsGroupResponse
 import com.thechance.evolvefit.api.dto.nutrition.WaterIntakeResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.NutritionService
@@ -25,6 +26,12 @@ class NutritionController(
     fun getAllUserMealsHistory(): ResponseEntity<List<MealHistory>> {
         val userId = JwtFilter.getUserId()
         return ResponseEntity.ok(nutritionService.getAllUserMealsHistory(userId))
+    }
+
+    @GetMapping("/meals/group")
+    fun getMealsGroupedByMealType(): ResponseEntity<MealsGroupResponse> {
+        val mealsGroup = nutritionService.getMealsGroupedByMealType(JwtFilter.getUserId())
+        return ResponseEntity.ok(mealsGroup)
     }
 
     @PostMapping("/meal")
