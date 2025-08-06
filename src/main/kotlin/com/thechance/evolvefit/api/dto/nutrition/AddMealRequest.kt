@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.dto.nutrition
+package com.thechance.evolvefit.api.dto.nutrition
 
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank

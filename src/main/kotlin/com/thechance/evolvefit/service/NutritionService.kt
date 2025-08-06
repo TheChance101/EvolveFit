@@ -1,13 +1,13 @@
-package com.thechance.evolvefit.service.nutrition
+package com.thechance.evolvefit.service
 
-import com.thechance.evolvefit.dto.nutrition.AddMealRequest
-import com.thechance.evolvefit.dto.nutrition.CaloriesResponse
-import com.thechance.evolvefit.entity.Gender
-import com.thechance.evolvefit.entity.Goal
-import com.thechance.evolvefit.entity.nutrition.MealHistory
-import com.thechance.evolvefit.entity.nutrition.MealType
+import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
+import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
+import com.thechance.evolvefit.service.entity.Gender
+import com.thechance.evolvefit.service.entity.Goal
+import com.thechance.evolvefit.service.entity.MealHistory
+import com.thechance.evolvefit.service.entity.MealType
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,7 +42,7 @@ class NutritionService(
         val totalCalories = getUserCaloriesNeeded(userId)
         return CaloriesResponse(totalCalories = totalCalories, caloriesConsumed = caloriesConsumed)
     }
-    
+
     private fun getUserCaloriesNeeded(userId: UUID): Int {
         // BMR using Harris-Benedict equation
         val userData = userRepository.findById(userId).orElseThrow()

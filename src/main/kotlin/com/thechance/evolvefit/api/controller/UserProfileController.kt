@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.controller
+package com.thechance.evolvefit.api.controller
 
 import com.thechance.evolvefit.service.UserProfileService
 import org.springframework.http.ResponseEntity

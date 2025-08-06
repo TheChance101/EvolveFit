@@ -1,12 +1,12 @@
 package com.thechance.evolvefit.service
 
-import com.thechance.evolvefit.dto.AuthRequest
-import com.thechance.evolvefit.dto.AuthResponse
-import com.thechance.evolvefit.dto.CreateUserRequest
-import com.thechance.evolvefit.entity.*
+import com.thechance.evolvefit.api.dto.AuthRequest
+import com.thechance.evolvefit.api.dto.AuthResponse
+import com.thechance.evolvefit.api.dto.CreateUserRequest
 import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
+import com.thechance.evolvefit.service.entity.*
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service

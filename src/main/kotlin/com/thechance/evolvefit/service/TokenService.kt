@@ -1,12 +1,12 @@
 package com.thechance.evolvefit.service
 
-import com.thechance.evolvefit.entity.RefreshToken
-import com.thechance.evolvefit.entity.User
 import com.thechance.evolvefit.repository.RefreshTokenRepository
+import com.thechance.evolvefit.service.entity.RefreshToken
+import com.thechance.evolvefit.service.entity.User
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 @Service
 class TokenService(

@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.controller
+package com.thechance.evolvefit.api.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

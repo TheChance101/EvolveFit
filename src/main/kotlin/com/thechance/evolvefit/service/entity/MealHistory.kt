@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.entity.nutrition
+package com.thechance.evolvefit.service.entity
 
 import jakarta.persistence.*
 import java.time.LocalDateTime

@@ -1,9 +1,9 @@
-package com.thechance.evolvefit.controller
+package com.thechance.evolvefit.api.controller
 
-import com.thechance.evolvefit.dto.AuthRequest
-import com.thechance.evolvefit.dto.AuthResponse
-import com.thechance.evolvefit.dto.CreateUserRequest
-import com.thechance.evolvefit.dto.RefreshRequest
+import com.thechance.evolvefit.api.dto.AuthRequest
+import com.thechance.evolvefit.api.dto.AuthResponse
+import com.thechance.evolvefit.api.dto.CreateUserRequest
+import com.thechance.evolvefit.api.dto.RefreshRequest
 import com.thechance.evolvefit.service.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity

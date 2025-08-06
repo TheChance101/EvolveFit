@@ -1,10 +1,10 @@
-package com.thechance.evolvefit.controller.nutrition
+package com.thechance.evolvefit.api.controller.nutrition
 
+import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
+import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
 import com.thechance.evolvefit.config.JwtFilter
-import com.thechance.evolvefit.dto.nutrition.AddMealRequest
-import com.thechance.evolvefit.dto.nutrition.CaloriesResponse
-import com.thechance.evolvefit.entity.nutrition.MealHistory
-import com.thechance.evolvefit.service.nutrition.NutritionService
+import com.thechance.evolvefit.service.NutritionService
+import com.thechance.evolvefit.service.entity.MealHistory
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

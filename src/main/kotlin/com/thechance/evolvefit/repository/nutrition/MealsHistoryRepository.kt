@@ -1,6 +1,6 @@
 package com.thechance.evolvefit.repository.nutrition
 
-import com.thechance.evolvefit.entity.nutrition.MealHistory
+import com.thechance.evolvefit.service.entity.MealHistory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.*
