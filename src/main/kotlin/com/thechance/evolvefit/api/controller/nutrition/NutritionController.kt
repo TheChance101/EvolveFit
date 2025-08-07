@@ -2,7 +2,6 @@ package com.thechance.evolvefit.api.controller.nutrition
 
 import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
-import com.thechance.evolvefit.api.dto.nutrition.MealsGroupResponse
 import com.thechance.evolvefit.api.dto.nutrition.WaterIntakeResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.NutritionService
@@ -13,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import java.util.*
 
 @RestController
@@ -23,15 +23,17 @@ class NutritionController(
 ) {
 
     @GetMapping("/meals")
-    fun getAllUserMealsHistory(): ResponseEntity<List<MealHistory>> {
+    fun getAllUserMealsHistory(
+        @RequestParam startDate: String,
+        @RequestParam endDate: String,
+    ): ResponseEntity<List<MealHistory>> {
         val userId = JwtFilter.getUserId()
-        return ResponseEntity.ok(nutritionService.getAllUserMealsHistory(userId))
-    }
-
-    @GetMapping("/meals/group")
-    fun getMealsGroupedByMealType(): ResponseEntity<MealsGroupResponse> {
-        val mealsGroup = nutritionService.getMealsGroupedByMealType(JwtFilter.getUserId())
-        return ResponseEntity.ok(mealsGroup)
+        val meals = nutritionService.getAllUserMealsHistory(
+            userId = userId,
+            startDate = LocalDateTime.parse(startDate),
+            endDate = LocalDateTime.parse(endDate)
+        )
+        return ResponseEntity.ok(meals)
     }
 
     @PostMapping("/meal")

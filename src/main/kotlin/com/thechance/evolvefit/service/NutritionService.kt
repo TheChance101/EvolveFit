@@ -2,7 +2,6 @@ package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
-import com.thechance.evolvefit.api.dto.nutrition.MealsGroupResponse
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
@@ -19,21 +18,8 @@ class NutritionService(
     private val userRepository: UserRepository,
 ) {
 
-    fun getAllUserMealsHistory(userId: UUID): List<MealHistory> {
-        return mealsHistoryRepository.findAllByUserId(userId)
-    }
-
-    fun getMealsGroupedByMealType(userId: UUID): MealsGroupResponse {
-        val meals = mealsHistoryRepository.findAllByUserId(userId)
-        val mealsGroup = meals.groupBy { it.mealType }
-
-        return MealsGroupResponse(
-            breakfast = mealsGroup[MealType.BREAKFAST]?.sumOf { it.caloriesConsumed } ?: 0,
-            lunch = mealsGroup[MealType.LUNCH]?.sumOf { it.caloriesConsumed } ?: 0,
-            dinner = mealsGroup[MealType.DINNER]?.sumOf { it.caloriesConsumed } ?: 0,
-            snack = mealsGroup[MealType.SNACK]?.sumOf { it.caloriesConsumed } ?: 0,
-            remainingCalories = getUserCaloriesNeeded(userId) - (meals.sumOf { it.caloriesConsumed })
-        )
+    fun getAllUserMealsHistory(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): List<MealHistory> {
+        return mealsHistoryRepository.findAllByUserIdAndDateBetween(userId, startDate, endDate)
     }
 
     fun addMeal(userId: UUID, addMealRequest: AddMealRequest): MealHistory {
@@ -51,7 +37,9 @@ class NutritionService(
     fun deleteMealById(mealId: UUID) = mealsHistoryRepository.deleteById(mealId)
 
     fun getUserCalories(userId: UUID): CaloriesResponse {
-        val caloriesConsumed = mealsHistoryRepository.sumUserCaloriesConsumed(userId)
+        val start = LocalDate.now().atStartOfDay()
+        val end = LocalDate.now().plusDays(1).atStartOfDay()
+        val caloriesConsumed = mealsHistoryRepository.sumUserCaloriesConsumed(userId, start, end) ?: 0
         val totalCalories = getUserCaloriesNeeded(userId)
         return CaloriesResponse(totalCalories = totalCalories, caloriesConsumed = caloriesConsumed)
     }
@@ -93,6 +81,8 @@ class NutritionService(
     }
 
     fun getWaterIntake(userId: UUID): Float {
-        return waterIntakeHistoryRepository.sumUserWaterIntake(userId)
+        val start = LocalDate.now().atStartOfDay()
+        val end = LocalDate.now().plusDays(1).atStartOfDay()
+        return waterIntakeHistoryRepository.sumUserWaterIntake(userId, start, end) ?: 0.0f
     }
 }
