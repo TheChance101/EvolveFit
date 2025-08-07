@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.dto
+package com.thechance.evolvefit.api.dto
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

@@ -1,4 +1,4 @@
-package com.thechance.evolvefit.entity
+package com.thechance.evolvefit.service.entity
 
 import jakarta.persistence.*
 

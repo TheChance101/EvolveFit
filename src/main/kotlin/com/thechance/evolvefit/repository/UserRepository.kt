@@ -1,6 +1,6 @@
 package com.thechance.evolvefit.repository
 
-import com.thechance.evolvefit.entity.User
+import com.thechance.evolvefit.service.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

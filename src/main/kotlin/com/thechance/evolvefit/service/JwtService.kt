@@ -1,6 +1,6 @@
 package com.thechance.evolvefit.service
 
-import com.thechance.evolvefit.entity.User
+import com.thechance.evolvefit.service.entity.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
