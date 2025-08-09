@@ -6,6 +6,9 @@ import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
 import com.thechance.evolvefit.service.entity.*
+import com.thechance.evolvefit.service.util.getHeightInCm
+import com.thechance.evolvefit.service.util.getWeightInKg
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +37,11 @@ class NutritionService(
         return mealsHistoryRepository.save(mealHistory)
     }
 
-    fun deleteMealById(mealId: UUID) = mealsHistoryRepository.deleteById(mealId)
+    @Transactional
+    fun deleteMealById(mealId: UUID, userId: UUID) {
+        val deleted = mealsHistoryRepository.deleteByIdAndUserId(mealId, userId) > 0
+        if (!deleted) throw IllegalStateException("Meal not found")
+    }
 
     fun getUserCalories(userId: UUID): CaloriesResponse {
         val start = LocalDate.now().atStartOfDay()
@@ -44,25 +51,24 @@ class NutritionService(
         return CaloriesResponse(totalCalories = totalCalories, caloriesConsumed = caloriesConsumed)
     }
 
+    // BMR using Harris-Benedict equation
     private fun getUserCaloriesNeeded(userId: UUID): Int {
-        // BMR using Harris-Benedict equation
         val userData = userRepository.findById(userId).orElseThrow()
 
         val bmr = when (userData.gender) {
             Gender.MALE -> {
-                88.362 + (13.397 * userData.weight) + (4.799 * userData.height) - (5.677 * userData.birthday.getUserAge())
+                88.362 + (13.397 * userData.getWeightInKg()) + (4.799 * userData.getHeightInCm()) - (5.677 * userData.birthday.getUserAge())
             }
 
             Gender.FEMALE -> {
-                447.593 + (9.247 * userData.weight) + (3.098 * userData.height) - (4.330 * userData.birthday.getUserAge())
+                447.593 + (9.247 * userData.getWeightInKg()) + (3.098 * userData.getHeightInCm()) - (4.330 * userData.birthday.getUserAge())
             }
         }
 
-        // Adjust based on goal
         return when (userData.goal) {
-            Goal.LOSE_WEIGHT -> (bmr * 0.8).toInt() // 20% deficit
+            Goal.LOSE_WEIGHT -> (bmr * 0.8).toInt()
             Goal.STAY_IN_SHAPE -> bmr.toInt()
-            Goal.GAIN_WEIGHT -> (bmr * 1.2).toInt() // 20% surplus
+            Goal.GAIN_WEIGHT -> (bmr * 1.2).toInt()
         }
     }
 

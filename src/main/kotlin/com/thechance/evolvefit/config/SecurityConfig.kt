@@ -1,5 +1,6 @@
 package com.thechance.evolvefit.config
 
+import com.thechance.evolvefit.config.exceptionHandling.CustomAuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -12,7 +13,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtFilter: JwtFilter
+    private val jwtFilter: JwtFilter,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint
 ) {
 
     @Bean
@@ -27,6 +29,9 @@ class SecurityConfig(
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling { exceptions ->
+                exceptions.authenticationEntryPoint(customAuthenticationEntryPoint)
+            }
 
         return http.build()
     }

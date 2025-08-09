@@ -6,11 +6,11 @@ import com.thechance.evolvefit.api.dto.CreateUserRequest
 import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
-import com.thechance.evolvefit.service.entity.*
+import com.thechance.evolvefit.service.entity.User
+import com.thechance.evolvefit.service.util.getUserHeight
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class AuthService(
@@ -28,13 +28,13 @@ class AuthService(
             name = request.fullName.trim(),
             email = request.email.trim(),
             password = passwordEncoder.encode(request.password),
-            birthday = LocalDate.parse(request.birthdate),
-            gender = Gender.valueOf(request.gender),
-            measurementType = MeasurementType.valueOf(request.measurementType),
-            height = request.height,
-            weight = request.weight,
-            goal = Goal.valueOf(request.goal),
-            workoutDays = request.workoutDays.map { WorkoutDays.valueOf(it) }.toSet(),
+            birthday = request.birthdate,
+            gender = request.gender,
+            measurementType = request.measurementType,
+            height = getUserHeight(request.height, request.measurementType),
+            weight = getUserHeight(request.weight, request.measurementType),
+            goal = request.goal,
+            workoutDays = request.workoutDays.toSet(),
             gymEquipments = if (request.gymEquipments.isNotEmpty()) {
                 request.gymEquipments.map { gymEquipmentsRepository.findById(it).get() }
             } else emptyList()
