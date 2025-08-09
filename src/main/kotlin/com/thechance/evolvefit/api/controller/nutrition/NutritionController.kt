@@ -44,7 +44,8 @@ class NutritionController(
 
     @DeleteMapping("/meal")
     fun deleteMealById(@RequestParam mealId: UUID): ResponseEntity<Unit> {
-        nutritionService.deleteMealById(mealId)
+        val userId = JwtFilter.getUserId()
+        nutritionService.deleteMealById(mealId, userId)
         return ResponseEntity.noContent().build()
     }
 

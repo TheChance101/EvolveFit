@@ -11,4 +11,6 @@ interface MealsHistoryRepository: JpaRepository<MealHistory, UUID> {
 
     @Query("SELECT SUM(mh.caloriesConsumed) FROM MealHistory mh where mh.userId = :userId AND mh.date >= :start AND mh.date < :end")
     fun sumUserCaloriesConsumed(userId: UUID, start: LocalDateTime, end: LocalDateTime): Int?
+
+    fun deleteByIdAndUserId(id: UUID, userId: UUID): Int
 }

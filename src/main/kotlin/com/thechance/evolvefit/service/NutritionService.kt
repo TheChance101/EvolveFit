@@ -6,6 +6,7 @@ import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
 import com.thechance.evolvefit.service.entity.*
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +35,11 @@ class NutritionService(
         return mealsHistoryRepository.save(mealHistory)
     }
 
-    fun deleteMealById(mealId: UUID) = mealsHistoryRepository.deleteById(mealId)
+    @Transactional
+    fun deleteMealById(mealId: UUID, userId: UUID) {
+        val deleted = mealsHistoryRepository.deleteByIdAndUserId(mealId, userId) > 0
+        if (!deleted) throw IllegalStateException("Meal not found")
+    }
 
     fun getUserCalories(userId: UUID): CaloriesResponse {
         val start = LocalDate.now().atStartOfDay()
