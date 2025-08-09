@@ -1,6 +1,8 @@
 package com.thechance.evolvefit.config
 
+import com.thechance.evolvefit.config.exceptionHandling.CustomAuthenticationEntryPoint
 import com.thechance.evolvefit.service.JwtService
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,7 +15,8 @@ import java.util.*
 
 @Component
 class JwtFilter(
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val authenticationEntryPoint: CustomAuthenticationEntryPoint,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -21,22 +24,28 @@ class JwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader = request.getHeader("Authorization")
+        try {
+            val authHeader = request.getHeader("Authorization")
 
-        val token = authHeader?.takeIf { it.startsWith("Bearer ") }?.removePrefix("Bearer ")?.trim()
+            val token = authHeader?.takeIf { it.startsWith("Bearer ") }?.removePrefix("Bearer ")?.trim()
 
-        if (token != null && SecurityContextHolder.getContext().authentication == null) {
-            val userId = jwtService.extractUserId(token)
-            val authentication = UsernamePasswordAuthenticationToken(
-                userId,
-                null,
-                emptyList()
-            )
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-            SecurityContextHolder.getContext().authentication = authentication
+            if (token != null && SecurityContextHolder.getContext().authentication == null) {
+                val userId = jwtService.extractUserId(token)
+                val authentication = UsernamePasswordAuthenticationToken(
+                    userId,
+                    null,
+                    emptyList()
+                )
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authentication
+            }
+
+            filterChain.doFilter(request, response)
+        } catch (ex: ExpiredJwtException) {
+            authenticationEntryPoint.handleJwtExpiredException(response, ex)
+        } catch (ex: Exception) {
+            authenticationEntryPoint.handleGeneralException(response, ex)
         }
-
-        filterChain.doFilter(request, response)
     }
 
     companion object {
