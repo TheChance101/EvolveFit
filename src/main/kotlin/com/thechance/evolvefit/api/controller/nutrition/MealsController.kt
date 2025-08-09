@@ -1,6 +1,8 @@
 package com.thechance.evolvefit.api.controller.nutrition
 
 import com.thechance.evolvefit.api.dto.nutrition.CreateMealRequest
+import com.thechance.evolvefit.api.dto.nutrition.MealResponse
+import com.thechance.evolvefit.api.dto.nutrition.toMealResponse
 import com.thechance.evolvefit.service.MealsService
 import com.thechance.evolvefit.service.entity.Meal
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -23,8 +25,9 @@ class MealsController(
     }
 
     @GetMapping("/all")
-    fun getAllMeals(): ResponseEntity<List<Meal>> {
-        return ResponseEntity.ok(mealsService.getAllMeals())
+    fun getAllMeals(): ResponseEntity<List<MealResponse>> {
+        val meals = mealsService.getAllMeals().map(Meal::toMealResponse)
+        return ResponseEntity.ok(meals)
     }
 
     @DeleteMapping("/delete")
@@ -33,4 +36,8 @@ class MealsController(
         return ResponseEntity.noContent().build()
     }
 
+    @GetMapping("/get")
+    fun getMealById(@RequestParam mealId: UUID): ResponseEntity<Meal> {
+        return ResponseEntity.ok(mealsService.getMealById(mealId))
+    }
 }

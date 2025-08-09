@@ -30,6 +30,10 @@ class MealsService(
         return mealsRepository.findAll()
     }
 
+    fun getMealById(mealId: UUID): Meal {
+        return mealsRepository.findById(mealId).orElseThrow { throw IllegalStateException("Meal not found") }
+    }
+
     fun deleteMeal(mealId: UUID) {
         if (!mealsRepository.existsById(mealId)) throw IllegalStateException("Meal not found")
         mealsRepository.deleteById(mealId)
