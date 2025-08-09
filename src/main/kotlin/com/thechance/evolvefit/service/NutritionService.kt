@@ -6,6 +6,8 @@ import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
 import com.thechance.evolvefit.service.entity.*
+import com.thechance.evolvefit.service.util.getHeightInCm
+import com.thechance.evolvefit.service.util.getWeightInKg
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -55,11 +57,11 @@ class NutritionService(
 
         val bmr = when (userData.gender) {
             Gender.MALE -> {
-                88.362 + (13.397 * userData.weight) + (4.799 * userData.height) - (5.677 * userData.birthday.getUserAge())
+                88.362 + (13.397 * userData.getWeightInKg()) + (4.799 * userData.getHeightInCm()) - (5.677 * userData.birthday.getUserAge())
             }
 
             Gender.FEMALE -> {
-                447.593 + (9.247 * userData.weight) + (3.098 * userData.height) - (4.330 * userData.birthday.getUserAge())
+                447.593 + (9.247 * userData.getWeightInKg()) + (3.098 * userData.getHeightInCm()) - (4.330 * userData.birthday.getUserAge())
             }
         }
 

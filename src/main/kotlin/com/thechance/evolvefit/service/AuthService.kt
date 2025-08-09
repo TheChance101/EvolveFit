@@ -7,6 +7,7 @@ import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.service.entity.*
+import com.thechance.evolvefit.service.util.getUserHeight
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -23,6 +24,7 @@ class AuthService(
 ) {
     fun signup(request: CreateUserRequest): AuthResponse {
         userRepo.findByEmail(request.email)?.let { throw IllegalStateException("User already exists") }
+        val measurementType = MeasurementType.valueOf(request.measurementType)
 
         val user = User(
             name = request.fullName.trim(),
@@ -30,9 +32,9 @@ class AuthService(
             password = passwordEncoder.encode(request.password),
             birthday = LocalDate.parse(request.birthdate),
             gender = Gender.valueOf(request.gender),
-            measurementType = MeasurementType.valueOf(request.measurementType),
-            height = request.height,
-            weight = request.weight,
+            measurementType = measurementType,
+            height = getUserHeight(request.height, measurementType),
+            weight = getUserHeight(request.weight, measurementType),
             goal = Goal.valueOf(request.goal),
             workoutDays = request.workoutDays.map { WorkoutDays.valueOf(it) }.toSet(),
             gymEquipments = if (request.gymEquipments.isNotEmpty()) {
