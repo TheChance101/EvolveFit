@@ -5,6 +5,7 @@ import com.thechance.evolvefit.api.dto.AuthResponse
 import com.thechance.evolvefit.api.dto.CreateUserRequest
 import com.thechance.evolvefit.api.dto.RefreshRequest
 import com.thechance.evolvefit.service.AuthService
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "Authentication related APIs")
 class AuthController(
     private val authService: AuthService
 ) {
