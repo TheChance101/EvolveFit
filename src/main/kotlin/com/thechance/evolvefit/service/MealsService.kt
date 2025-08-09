@@ -1,7 +1,9 @@
 package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.api.dto.nutrition.CreateMealRequest
+import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsRepository
+import com.thechance.evolvefit.service.entity.Goal
 import com.thechance.evolvefit.service.entity.Meal
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -10,6 +12,7 @@ import java.util.*
 
 @Service
 class MealsService(
+    private val userRepository: UserRepository,
     private val mealsRepository: MealsRepository,
     private val imageService: ImageService,
 ) {
@@ -53,5 +56,14 @@ class MealsService(
     fun deleteMeal(mealId: UUID) {
         if (!mealsRepository.existsById(mealId)) throw IllegalStateException("Meal not found")
         mealsRepository.deleteById(mealId)
+    }
+
+    fun suggestMealsByUserGoal(userId: UUID): List<Meal> {
+        val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
+        return when (user.goal) {
+            Goal.LOSE_WEIGHT -> mealsRepository.findAllByCaloriesBetween(0, 500)
+            Goal.STAY_IN_SHAPE -> mealsRepository.findAllByCaloriesBetween(500, 700)
+            Goal.GAIN_WEIGHT -> mealsRepository.findAllByCaloriesBetween(700, 9999)
+        }
     }
 }

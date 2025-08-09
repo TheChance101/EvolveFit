@@ -3,6 +3,7 @@ package com.thechance.evolvefit.api.controller.nutrition
 import com.thechance.evolvefit.api.dto.nutrition.CreateMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.MealResponse
 import com.thechance.evolvefit.api.dto.nutrition.toMealResponse
+import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.MealsService
 import com.thechance.evolvefit.service.entity.Meal
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -45,5 +46,12 @@ class MealsController(
     @PutMapping("/image")
     fun setMealImage(@RequestParam mealId: UUID, @RequestParam image: MultipartFile): ResponseEntity<String> {
         return ResponseEntity.ok(mealsService.setMealImage(mealId, image))
+    }
+
+    @GetMapping("/suggested")
+    fun suggestMealsByUserGoal(): ResponseEntity<List<MealResponse>> {
+        val userId = JwtFilter.getUserId()
+        val meals = mealsService.suggestMealsByUserGoal(userId).map(Meal::toMealResponse)
+        return ResponseEntity.ok(meals)
     }
 }
