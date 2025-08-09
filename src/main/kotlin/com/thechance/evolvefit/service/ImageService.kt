@@ -12,8 +12,16 @@ class ImageService(
 ) {
 
     fun uploadUserProfile(fileName: String, file: MultipartFile): String {
+        return uploadImage(fileName, file, "profile")
+    }
+
+    fun uploadMealImage(fileName: String, file: MultipartFile): String {
+        return uploadImage(fileName, file, "meals")
+    }
+
+    private fun uploadImage(fileName: String, file: MultipartFile, folderName: String): String {
         val options = ObjectUtils.asMap(
-            "folder", "evolveFit/images/profile",
+            "folder", "evolveFit/images/$folderName",
             "public_id", "$fileName-${Instant.now().epochSecond}",
             "transformation", "q_auto"
         )

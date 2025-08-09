@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @RestController
@@ -39,5 +40,10 @@ class MealsController(
     @GetMapping("/get")
     fun getMealById(@RequestParam mealId: UUID): ResponseEntity<Meal> {
         return ResponseEntity.ok(mealsService.getMealById(mealId))
+    }
+
+    @PutMapping("/image")
+    fun setMealImage(@RequestParam mealId: UUID, @RequestParam image: MultipartFile): ResponseEntity<String> {
+        return ResponseEntity.ok(mealsService.setMealImage(mealId, image))
     }
 }

@@ -22,5 +22,5 @@ data class Meal(
     @Column(name = "ingredients")
     @Enumerated(EnumType.STRING)
     val ingredients: List<String>,
-    val imageUrl: String = ""
+    var imageUrl: String = ""
 )
