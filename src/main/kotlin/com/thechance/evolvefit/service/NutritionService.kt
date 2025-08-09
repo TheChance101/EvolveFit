@@ -51,8 +51,8 @@ class NutritionService(
         return CaloriesResponse(totalCalories = totalCalories, caloriesConsumed = caloriesConsumed)
     }
 
+    // BMR using Harris-Benedict equation
     private fun getUserCaloriesNeeded(userId: UUID): Int {
-        // BMR using Harris-Benedict equation
         val userData = userRepository.findById(userId).orElseThrow()
 
         val bmr = when (userData.gender) {
@@ -65,11 +65,10 @@ class NutritionService(
             }
         }
 
-        // Adjust based on goal
         return when (userData.goal) {
-            Goal.LOSE_WEIGHT -> (bmr * 0.8).toInt() // 20% deficit
+            Goal.LOSE_WEIGHT -> (bmr * 0.8).toInt()
             Goal.STAY_IN_SHAPE -> bmr.toInt()
-            Goal.GAIN_WEIGHT -> (bmr * 1.2).toInt() // 20% surplus
+            Goal.GAIN_WEIGHT -> (bmr * 1.2).toInt()
         }
     }
 
