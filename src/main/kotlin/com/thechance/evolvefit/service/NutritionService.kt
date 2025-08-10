@@ -2,6 +2,7 @@ package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.api.dto.nutrition.AddMealRequest
 import com.thechance.evolvefit.api.dto.nutrition.CaloriesResponse
+import com.thechance.evolvefit.api.dto.nutrition.WaterIntakeResponse
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.nutrition.MealsHistoryRepository
 import com.thechance.evolvefit.repository.nutrition.WaterIntakeHistoryRepository
@@ -86,9 +87,24 @@ class NutritionService(
         waterIntakeHistoryRepository.save(waterIntake)
     }
 
-    fun getWaterIntake(userId: UUID): Float {
+    fun getWaterIntake(userId: UUID): WaterIntakeResponse {
         val start = LocalDate.now().atStartOfDay()
         val end = LocalDate.now().plusDays(1).atStartOfDay()
-        return waterIntakeHistoryRepository.sumUserWaterIntake(userId, start, end) ?: 0.0f
+        val waterConsumed = waterIntakeHistoryRepository.sumUserWaterIntake(userId, start, end) ?: 0.0f
+        val totalWater = getTotalWaterNeeded(userId)
+        return WaterIntakeResponse(waterConsumed = waterConsumed, totalWater = totalWater)
+    }
+
+    private fun getTotalWaterNeeded(userId: UUID): Float {
+        val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
+        val baseWaterNeeded = user.getWeightInKg() * 0.033f
+
+        val result = when (user.goal) {
+            Goal.LOSE_WEIGHT -> baseWaterNeeded * 1.2f
+            Goal.GAIN_WEIGHT -> baseWaterNeeded * 1.1f
+            Goal.STAY_IN_SHAPE -> baseWaterNeeded
+        }
+
+        return String.format("%.1f", result).toFloat()
     }
 }

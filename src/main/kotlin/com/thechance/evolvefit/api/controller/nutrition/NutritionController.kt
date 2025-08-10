@@ -68,7 +68,7 @@ class NutritionController(
 
     @GetMapping("/water")
     fun getWaterIntake(): ResponseEntity<WaterIntakeResponse> {
-        val waterIntake = nutritionService.getWaterIntake(JwtFilter.getUserId())
-        return ResponseEntity.ok(WaterIntakeResponse(waterIntake))
+        val waterResponse = nutritionService.getWaterIntake(JwtFilter.getUserId())
+        return ResponseEntity.ok(waterResponse)
     }
 }
