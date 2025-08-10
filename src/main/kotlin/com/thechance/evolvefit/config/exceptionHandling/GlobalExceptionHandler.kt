@@ -41,6 +41,17 @@ class GlobalExceptionHandler {
         return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(InvalidRefreshTokenException::class)
+    fun handleInvalidRefreshTokenException(ex: InvalidRefreshTokenException): ResponseEntity<ApiError> {
+        val apiError = ApiError(
+            status = 1002,
+            exception = ex.javaClass.name,
+            error = "Invalid refresh token",
+            message = ex.message ?: "Invalid refresh token"
+        )
+        return ResponseEntity(apiError, HttpStatus.UNAUTHORIZED)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
         val apiError = ApiError(
