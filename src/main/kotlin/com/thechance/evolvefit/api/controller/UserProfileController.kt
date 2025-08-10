@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.api.controller
 
 import com.thechance.evolvefit.service.UserProfileService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,6 +13,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/user/profile")
+@Tag(name = "User Profile", description = "User Profile related APIs")
 class UserProfileController(
     private val imageUploadService: UserProfileService
 ) {
