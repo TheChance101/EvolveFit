@@ -33,7 +33,7 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         exception: ExpiredJwtException
     ) {
         val apiError = ApiError(
-            status = HttpServletResponse.SC_UNAUTHORIZED,
+            status = 1001,
             exception = exception.javaClass.name,
             error = "Unauthorized",
             message = "Jwt Token has expired. Please login again to get a new token.",

@@ -3,6 +3,7 @@ package com.thechance.evolvefit.service
 import com.thechance.evolvefit.api.dto.AuthRequest
 import com.thechance.evolvefit.api.dto.AuthResponse
 import com.thechance.evolvefit.api.dto.CreateUserRequest
+import com.thechance.evolvefit.config.exceptionHandling.InvalidRefreshTokenException
 import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.RefreshTokenRepository
 import com.thechance.evolvefit.repository.UserRepository
@@ -53,8 +54,7 @@ class AuthService(
     }
 
     fun refresh(refreshToken: String): AuthResponse {
-        val token = tokenService.validateRefreshToken(refreshToken)
-            ?: throw RuntimeException("Invalid or expired refresh token")
+        val token = tokenService.validateRefreshToken(refreshToken) ?: throw InvalidRefreshTokenException()
         refreshRepo.delete(token)
         return generateAuthResponse(token.user)
     }
