@@ -45,7 +45,3 @@ enum class BodyArea {
     ARMS,
     CORE
 }
-
-//enum class ExerciseCreatedBy {
-//    SYSTEM, USER
-//}
