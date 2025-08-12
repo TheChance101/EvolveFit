@@ -44,7 +44,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRefreshTokenException::class)
     fun handleInvalidRefreshTokenException(ex: InvalidRefreshTokenException): ResponseEntity<ApiError> {
         val apiError = ApiError(
-            status = 1002,
+            status = EvolveFitErrorCode.INVALID_REFRESH_TOKEN,
             exception = ex.javaClass.name,
             error = "Invalid refresh token",
             message = ex.message ?: "Invalid refresh token"
