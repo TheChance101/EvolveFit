@@ -9,6 +9,8 @@ import com.thechance.evolvefit.service.workout.WorkoutService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 @RestController
 @RequestMapping("/workout")
@@ -22,6 +24,11 @@ class WorkoutController(
         val userId = JwtFilter.Companion.getUserId()
         val workout = workoutService.createWorkout(userId, workoutRequest).toWorkoutResponse()
         return ResponseEntity.ok(workout)
+    }
+
+    @PutMapping("/image")
+    fun setWorkoutImage(@RequestParam workoutId: UUID, @RequestParam image: MultipartFile): ResponseEntity<String> {
+        return ResponseEntity.ok(workoutService.setWorkoutImage(workoutId, image))
     }
 
     @GetMapping("/all")

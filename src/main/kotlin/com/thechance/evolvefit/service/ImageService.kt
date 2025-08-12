@@ -23,6 +23,10 @@ class ImageService(
         return uploadImage(fileName, file, "exercises")
     }
 
+    fun uploadWorkoutImage(fileName: String, file: MultipartFile): String {
+        return uploadImage(fileName, file, "workouts")
+    }
+
     private fun uploadImage(fileName: String, file: MultipartFile, folderName: String): String {
         val options = ObjectUtils.asMap(
             "folder", "evolveFit/images/$folderName",

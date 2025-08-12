@@ -3,16 +3,19 @@ package com.thechance.evolvefit.service.workout
 import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
 import com.thechance.evolvefit.repository.workout.ExerciseRepository
 import com.thechance.evolvefit.repository.workout.WorkoutRepository
+import com.thechance.evolvefit.service.ImageService
 import com.thechance.evolvefit.service.entity.workout.Exercise
 import com.thechance.evolvefit.service.entity.workout.ExerciseType
 import com.thechance.evolvefit.service.entity.workout.Workout
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @Service
 class WorkoutService(
     private val workoutRepository: WorkoutRepository,
     private val exerciseRepository: ExerciseRepository,
+    private val imageService: ImageService,
 ) {
 
     fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): Workout {
@@ -32,6 +35,19 @@ class WorkoutService(
 
     fun getAllWorkouts(): List<Workout> {
         return workoutRepository.findAll()
+    }
+
+    fun setWorkoutImage(workoutId: UUID, image: MultipartFile): String {
+        val workout = workoutRepository.findById(workoutId).orElseThrow { throw IllegalStateException("Workout not found") }
+
+        if (workout.imageUrl.isNotBlank()) {
+            imageService.deleteImage(workout.imageUrl)
+        }
+
+        val imageUrl = imageService.uploadWorkoutImage(workoutId.toString(), image)
+        val updatedWorkout = workout.copy(imageUrl = imageUrl)
+        workoutRepository.save(updatedWorkout)
+        return imageUrl
     }
 
     companion object {
