@@ -1,5 +1,6 @@
 package com.thechance.evolvefit.api.controller.workout
 
+import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryRequest
 import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
 import com.thechance.evolvefit.api.dto.workout.WorkoutResponse
 import com.thechance.evolvefit.api.dto.workout.toWorkoutResponse
@@ -48,5 +49,12 @@ class WorkoutController(
         val userId = JwtFilter.getUserId()
         val workouts = workoutService.suggestWorkoutsForUser(userId).map(Workout::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
+    }
+
+    @PostMapping("/submit")
+    fun submitWorkout(@RequestBody workoutHistoryRequest: WorkoutHistoryRequest): ResponseEntity<Unit> {
+        val userId = JwtFilter.getUserId()
+        workoutService.submitWorkout(userId, workoutHistoryRequest)
+        return ResponseEntity.noContent().build()
     }
 }
