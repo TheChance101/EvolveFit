@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.service.workout
 
 import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
+import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.workout.ExerciseRepository
 import com.thechance.evolvefit.repository.workout.WorkoutRepository
 import com.thechance.evolvefit.service.ImageService
@@ -17,6 +18,7 @@ class WorkoutService(
     private val workoutRepository: WorkoutRepository,
     private val exerciseRepository: ExerciseRepository,
     private val imageService: ImageService,
+    private val userRepository: UserRepository,
 ) {
 
     fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): Workout {
@@ -32,6 +34,19 @@ class WorkoutService(
         )
 
         return workoutRepository.save(workout)
+    }
+
+    fun suggestWorkoutsForUser(userId: UUID): List<Workout> {
+        val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
+        val allWorkouts = workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.SYSTEM)
+
+        return allWorkouts.filter { workout ->
+            workout.exercises.all { exercise ->
+                exercise.gymEquipments.isEmpty() || exercise.gymEquipments.all { equipment ->
+                    user.gymEquipments.contains(equipment)
+                }
+            }
+        }
     }
 
     fun getAllWorkouts(): List<Workout> {

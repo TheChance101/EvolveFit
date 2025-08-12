@@ -1,5 +1,7 @@
 package com.thechance.evolvefit.api.dto.workout
 
+import com.thechance.evolvefit.api.dto.GymEquipmentResponse
+import com.thechance.evolvefit.api.dto.toGymEquipmentResponse
 import com.thechance.evolvefit.service.entity.GymEquipment
 import com.thechance.evolvefit.service.entity.workout.BodyArea
 import com.thechance.evolvefit.service.entity.workout.Exercise
@@ -11,7 +13,7 @@ data class ExerciseResponse(
     val name: String,
     val instructions: List<String>,
     val images: List<String>,
-    val gymEquipments: List<GymEquipment>,
+    val gymEquipments: List<GymEquipmentResponse>,
     val focusArea: List<BodyArea>,
     val exerciseType: ExerciseType,
     val durationSeconds: Int? = null,
@@ -23,7 +25,7 @@ fun Exercise.toExerciseResponse() = ExerciseResponse(
     name = name,
     instructions = instructions,
     images = images,
-    gymEquipments = gymEquipments,
+    gymEquipments = gymEquipments.map(GymEquipment::toGymEquipmentResponse),
     focusArea = focusArea,
     exerciseType = exerciseType,
     durationSeconds = durationSeconds,

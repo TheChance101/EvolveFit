@@ -42,4 +42,11 @@ class WorkoutController(
         val workouts = workoutService.getAllCommunityWorkouts().map(Workout::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
     }
+
+    @GetMapping("/suggested")
+    fun suggestWorkoutsForUser(): ResponseEntity<List<WorkoutResponse>> {
+        val userId = JwtFilter.getUserId()
+        val workouts = workoutService.suggestWorkoutsForUser(userId).map(Workout::toWorkoutResponse)
+        return ResponseEntity.ok(workouts)
+    }
 }
