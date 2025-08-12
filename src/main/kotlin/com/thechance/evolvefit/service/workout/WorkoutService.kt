@@ -7,6 +7,7 @@ import com.thechance.evolvefit.service.ImageService
 import com.thechance.evolvefit.service.entity.workout.Exercise
 import com.thechance.evolvefit.service.entity.workout.ExerciseType
 import com.thechance.evolvefit.service.entity.workout.Workout
+import com.thechance.evolvefit.service.entity.workout.WorkoutCreatedBy
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
@@ -34,7 +35,11 @@ class WorkoutService(
     }
 
     fun getAllWorkouts(): List<Workout> {
-        return workoutRepository.findAll()
+        return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.SYSTEM)
+    }
+
+    fun getAllCommunityWorkouts(): List<Workout> {
+        return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.USER)
     }
 
     fun setWorkoutImage(workoutId: UUID, image: MultipartFile): String {

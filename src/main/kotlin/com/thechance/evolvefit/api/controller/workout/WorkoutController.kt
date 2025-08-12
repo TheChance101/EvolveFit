@@ -36,4 +36,10 @@ class WorkoutController(
         val workouts = workoutService.getAllWorkouts().map(Workout::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
     }
+
+    @GetMapping("/community")
+    fun getAllCommunityWorkouts(): ResponseEntity<List<WorkoutResponse>> {
+        val workouts = workoutService.getAllCommunityWorkouts().map(Workout::toWorkoutResponse)
+        return ResponseEntity.ok(workouts)
+    }
 }
