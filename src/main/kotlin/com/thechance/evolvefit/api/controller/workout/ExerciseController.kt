@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @RestController
@@ -25,6 +26,11 @@ class ExerciseController(
         val userId = JwtFilter.getUserId()
         val exercise = exerciseService.createExercise(userId, exerciseRequest).toExerciseResponse()
         return ResponseEntity(exercise, HttpStatus.CREATED)
+    }
+
+    @PutMapping("/image")
+    fun setExerciseImage(@RequestParam exerciseId: UUID, @RequestParam image: MultipartFile): ResponseEntity<String> {
+        return ResponseEntity.ok(exerciseService.setExerciseImage(exerciseId, image))
     }
 
     @GetMapping("/all")
