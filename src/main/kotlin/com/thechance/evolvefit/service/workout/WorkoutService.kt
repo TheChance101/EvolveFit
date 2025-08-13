@@ -54,8 +54,18 @@ class WorkoutService(
         return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.SYSTEM)
     }
 
-    fun getAllCommunityWorkouts(): List<Workout> {
-        return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.USER)
+    fun getAllCommunityWorkouts(): List<CommunityWorkout> {
+        return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.USER).map {
+            CommunityWorkout(
+                id = it.id,
+                name = it.name,
+                description = it.description,
+                imageUrl = it.imageUrl,
+                level = it.level,
+                creatorName = userRepository.findById(it.creatorId).get().name,
+                exercises = it.exercises
+            )
+        }
     }
 
     fun setWorkoutImage(workoutId: UUID, image: MultipartFile): String {

@@ -5,6 +5,7 @@ import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
 import com.thechance.evolvefit.api.dto.workout.WorkoutResponse
 import com.thechance.evolvefit.api.dto.workout.toWorkoutResponse
 import com.thechance.evolvefit.config.JwtFilter
+import com.thechance.evolvefit.service.entity.workout.CommunityWorkout
 import com.thechance.evolvefit.service.entity.workout.Workout
 import com.thechance.evolvefit.service.workout.WorkoutService
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -40,7 +41,7 @@ class WorkoutController(
 
     @GetMapping("/community")
     fun getAllCommunityWorkouts(): ResponseEntity<List<WorkoutResponse>> {
-        val workouts = workoutService.getAllCommunityWorkouts().map(Workout::toWorkoutResponse)
+        val workouts = workoutService.getAllCommunityWorkouts().map(CommunityWorkout::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
     }
 
