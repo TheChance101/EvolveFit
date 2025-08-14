@@ -2,7 +2,7 @@ package com.thechance.evolvefit.service.entity.workout
 
 import java.util.*
 
-data class CommunityWorkout(
+data class WorkoutEntity(
     val id: UUID,
     val name: String,
     val description: String,

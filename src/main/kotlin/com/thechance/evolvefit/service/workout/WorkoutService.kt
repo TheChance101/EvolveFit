@@ -23,7 +23,7 @@ class WorkoutService(
     private val workoutHistoryRepository: WorkoutHistoryRepository
 ) {
 
-    fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): Workout {
+    fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): WorkoutEntity {
         val workout = Workout(
             name = workoutRequest.name,
             description = workoutRequest.description,
@@ -35,37 +35,30 @@ class WorkoutService(
             }
         )
 
-        return workoutRepository.save(workout)
+        return workoutRepository.save(workout).toEntity()
     }
 
-    fun suggestWorkoutsForUser(userId: UUID, focusArea: BodyArea?): List<Workout> {
+    fun suggestWorkoutsForUser(userId: UUID, focusArea: BodyArea?): List<WorkoutEntity> {
         val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
         val allWorkouts = workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.SYSTEM)
 
-        return allWorkouts.filter { workout ->
-            workout.exercises.any { exercise ->
-                (isExerciseMatchFocusArea(exercise, focusArea))
-            } &&
-            workout.exercises.all { exercise ->
-                isExerciseMatchUserEquipments(exercise, user.gymEquipments)
+        return allWorkouts
+            .filter { workout ->
+            workout.exercises.any { exercise -> (isExerciseMatchFocusArea(exercise, focusArea)) } &&
+            workout.exercises.all { exercise -> isExerciseMatchUserEquipments(exercise, user.gymEquipments) }
             }
-        }
+            .map { it.toEntity() }
     }
 
-    fun getAllCommunityWorkouts(focusArea: BodyArea?): List<CommunityWorkout> {
+    fun getAllCommunityWorkouts(focusArea: BodyArea?): List<WorkoutEntity> {
         return workoutRepository.findAllByCreatedBy(WorkoutCreatedBy.USER)
             .filter { workout -> workout.exercises.any { exercise -> isExerciseMatchFocusArea(exercise, focusArea)} }
-            .map {
-            CommunityWorkout(
-                id = it.id,
-                name = it.name,
-                description = it.description,
-                imageUrl = it.imageUrl,
-                level = it.level,
-                creatorName = userRepository.findById(it.creatorId).get().name,
-                exercises = it.exercises
-            )
-        }
+            .map { it.toEntity() }
+    }
+
+    fun getWorkoutDetails(workoutId: UUID): WorkoutEntity {
+        val workout = workoutRepository.findById(workoutId).orElseThrow { throw IllegalStateException("Workout not found") }
+        return workout.toEntity()
     }
 
     fun setWorkoutImage(workoutId: UUID, image: MultipartFile): String {
@@ -100,6 +93,20 @@ class WorkoutService(
         return exercise.gymEquipments.isEmpty() || exercise.gymEquipments.all { equipment ->
             userEquipments.contains(equipment)
         }
+    }
+
+    private fun Workout.toEntity(): WorkoutEntity {
+        val creatorName = if (createdBy == WorkoutCreatedBy.USER) userRepository.findById(creatorId).get().name else ""
+
+        return WorkoutEntity(
+            id = id,
+            name = name,
+            description = description,
+            imageUrl = imageUrl,
+            level = level,
+            creatorName = creatorName,
+            exercises = exercises
+        )
     }
 
     companion object {
