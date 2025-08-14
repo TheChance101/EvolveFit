@@ -1,11 +1,9 @@
 package com.thechance.evolvefit.api.controller.workout
 
-import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryRequest
-import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
-import com.thechance.evolvefit.api.dto.workout.WorkoutResponse
-import com.thechance.evolvefit.api.dto.workout.toWorkoutResponse
+import com.thechance.evolvefit.api.dto.workout.*
 import com.thechance.evolvefit.config.JwtFilter
-import com.thechance.evolvefit.service.entity.workout.Workout
+import com.thechance.evolvefit.service.entity.workout.BodyArea
+import com.thechance.evolvefit.service.entity.workout.WorkoutEntity
 import com.thechance.evolvefit.service.workout.WorkoutService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -21,9 +19,9 @@ class WorkoutController(
 ) {
 
     @PostMapping("/create")
-    fun createWorkout(@RequestBody workoutRequest: WorkoutRequest): ResponseEntity<WorkoutResponse> {
+    fun createWorkout(@RequestBody workoutRequest: WorkoutRequest): ResponseEntity<WorkoutDetailsResponse> {
         val userId = JwtFilter.Companion.getUserId()
-        val workout = workoutService.createWorkout(userId, workoutRequest).toWorkoutResponse()
+        val workout = workoutService.createWorkout(userId, workoutRequest).toWorkoutDetailsResponse()
         return ResponseEntity.ok(workout)
     }
 
@@ -32,23 +30,23 @@ class WorkoutController(
         return ResponseEntity.ok(workoutService.setWorkoutImage(workoutId, image))
     }
 
-    @GetMapping("/all")
-    fun getAllWorkout(): ResponseEntity<List<WorkoutResponse>> {
-        val workouts = workoutService.getAllWorkouts().map(Workout::toWorkoutResponse)
-        return ResponseEntity.ok(workouts)
-    }
-
     @GetMapping("/community")
-    fun getAllCommunityWorkouts(): ResponseEntity<List<WorkoutResponse>> {
-        val workouts = workoutService.getAllCommunityWorkouts().map(Workout::toWorkoutResponse)
+    fun getAllCommunityWorkouts(@RequestParam focusArea: BodyArea? = null): ResponseEntity<List<WorkoutResponse>> {
+        val workouts = workoutService.getAllCommunityWorkouts(focusArea).map(WorkoutEntity::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
     }
 
     @GetMapping("/suggested")
-    fun suggestWorkoutsForUser(): ResponseEntity<List<WorkoutResponse>> {
+    fun suggestWorkoutsForUser(@RequestParam focusArea: BodyArea? = null): ResponseEntity<List<WorkoutResponse>> {
         val userId = JwtFilter.getUserId()
-        val workouts = workoutService.suggestWorkoutsForUser(userId).map(Workout::toWorkoutResponse)
+        val workouts = workoutService.suggestWorkoutsForUser(userId, focusArea).map(WorkoutEntity::toWorkoutResponse)
         return ResponseEntity.ok(workouts)
+    }
+
+    @GetMapping("/details")
+    fun getWorkoutDetails(@RequestParam workoutId: UUID): ResponseEntity<WorkoutDetailsResponse> {
+        val workout = workoutService.getWorkoutDetails(workoutId).toWorkoutDetailsResponse()
+        return ResponseEntity.ok(workout)
     }
 
     @PostMapping("/submit")

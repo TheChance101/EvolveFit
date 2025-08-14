@@ -3,6 +3,7 @@ package com.thechance.evolvefit.config.exceptionHandling
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -48,6 +49,17 @@ class GlobalExceptionHandler {
             exception = ex.javaClass.name,
             error = "Invalid refresh token",
             message = ex.message ?: "Invalid refresh token"
+        )
+        return ResponseEntity(apiError, HttpStatus.UNAUTHORIZED)
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentialsException(ex: BadCredentialsException): ResponseEntity<ApiError> {
+        val apiError = ApiError(
+            status = EvolveFitErrorCode.INVALID_CREDENTIAL,
+            exception = ex.javaClass.name,
+            error = "Invalid CredentialS",
+            message = ex.message ?: "Invalid Credential"
         )
         return ResponseEntity(apiError, HttpStatus.UNAUTHORIZED)
     }

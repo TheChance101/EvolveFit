@@ -44,4 +44,10 @@ class ExerciseController(
         exerciseService.deleteExercise(exerciseId)
         return ResponseEntity.noContent().build()
     }
+
+    @GetMapping("/search")
+    fun searchExercises(@RequestParam name: String): ResponseEntity<List<ExerciseResponse>> {
+        val result = exerciseService.searchExercisesByName(name).map(Exercise::toExerciseResponse)
+        return ResponseEntity.ok(result)
+    }
 }
