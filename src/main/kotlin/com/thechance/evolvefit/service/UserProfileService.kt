@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.repository.UserRepository
+import com.thechance.evolvefit.service.entity.User
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -11,6 +12,11 @@ class UserProfileService(
     private val userRepository: UserRepository,
     private val imageService: ImageService
 ) {
+
+    fun getUserProfile(userId: UUID): User {
+        val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
+        return user
+    }
 
     @Transactional
     fun uploadUserProfileImage(userId: UUID, file: MultipartFile): String {
