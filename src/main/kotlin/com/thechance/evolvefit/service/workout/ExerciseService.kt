@@ -67,6 +67,10 @@ class ExerciseService(
         exerciseRepository.deleteById(id)
     }
 
+    fun searchExercisesByName(name: String): List<Exercise> {
+        return exerciseRepository.searchByNameContaining(name)
+    }
+
     fun setExerciseImage(exerciseId: UUID, image: MultipartFile): String {
         val exercise = exerciseRepository.findById(exerciseId).orElseThrow { throw IllegalStateException("Exercise not found") }
         if (exercise.images.size >= 2) throw IllegalStateException("You can't upload more than 2 images")
