@@ -5,12 +5,14 @@ import com.thechance.evolvefit.api.dto.favorite.toFavoriteWorkoutResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.entity.favorite.FavoriteWorkout
 import com.thechance.evolvefit.service.favorite.FavoriteWorkoutService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
 @RequestMapping("/favorite/workout")
+@Tag(name = "Favorite Workouts", description = "Favorite Workouts related APIs")
 class FavoriteWorkoutController(
     private val favoriteWorkoutService: FavoriteWorkoutService
 ) {

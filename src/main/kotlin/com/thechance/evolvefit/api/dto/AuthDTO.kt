@@ -6,6 +6,7 @@ import com.thechance.evolvefit.service.entity.MeasurementType
 import com.thechance.evolvefit.service.entity.WorkoutDays
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
@@ -40,7 +41,9 @@ data class CreateUserRequest(
     val birthdate: LocalDate,
     val gender: Gender,
     val measurementType: MeasurementType,
+    @field:Min(1, message = "height must be larger than 0")
     val height: Float,
+    @field:Min(1, message = "weight must be larger than 0")
     val weight: Float,
     val goal: Goal,
     val workoutDays: List<WorkoutDays>,

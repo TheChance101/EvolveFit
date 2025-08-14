@@ -2,6 +2,7 @@ package com.thechance.evolvefit.config
 
 import com.thechance.evolvefit.config.exceptionHandling.CustomAuthenticationEntryPoint
 import com.thechance.evolvefit.service.JwtService
+import com.thechance.evolvefit.service.UserProfileService
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -17,6 +18,7 @@ import java.util.*
 class JwtFilter(
     private val jwtService: JwtService,
     private val authenticationEntryPoint: CustomAuthenticationEntryPoint,
+    private val userProfileService: UserProfileService,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -31,6 +33,7 @@ class JwtFilter(
 
             if (token != null && SecurityContextHolder.getContext().authentication == null) {
                 val userId = jwtService.extractUserId(token)
+                if (!userProfileService.userExists(userId)) throw IllegalStateException("User not found")
                 val authentication = UsernamePasswordAuthenticationToken(
                     userId,
                     null,

@@ -5,12 +5,14 @@ import com.thechance.evolvefit.api.dto.favorite.toFavoriteMealResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.entity.favorite.FavoriteMeal
 import com.thechance.evolvefit.service.favorite.FavoriteMealService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
 @RequestMapping("/favorite/meal")
+@Tag(name = "Favorite Meals", description = "Favorite Meals related APIs")
 class FavoriteMealController(
     private val favoriteMealService: FavoriteMealService
 ) {
