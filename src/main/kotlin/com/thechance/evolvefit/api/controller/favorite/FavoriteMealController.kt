@@ -1,5 +1,7 @@
 package com.thechance.evolvefit.api.controller.favorite
 
+import com.thechance.evolvefit.api.dto.favorite.FavoriteMealResponse
+import com.thechance.evolvefit.api.dto.favorite.toFavoriteMealResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.entity.favorite.FavoriteMeal
 import com.thechance.evolvefit.service.favorite.FavoriteMealService
@@ -14,16 +16,16 @@ class FavoriteMealController(
 ) {
 
     @GetMapping
-    fun getFavoriteMeals(): ResponseEntity<List<FavoriteMeal>> {
+    fun getFavoriteMeals(): ResponseEntity<List<FavoriteMealResponse>> {
         val userId = JwtFilter.getUserId()
-        val favoriteMeals = favoriteMealService.getAllFavoriteMeals(userId)
+        val favoriteMeals = favoriteMealService.getAllFavoriteMeals(userId).map(FavoriteMeal::toFavoriteMealResponse)
         return ResponseEntity.ok(favoriteMeals)
     }
 
     @PostMapping
-    fun addFavoriteMeal(@RequestParam mealId: UUID): ResponseEntity<FavoriteMeal> {
+    fun addFavoriteMeal(@RequestParam mealId: UUID): ResponseEntity<FavoriteMealResponse> {
         val userId = JwtFilter.getUserId()
-        val favoriteMeal = favoriteMealService.addFavoriteMeal(userId, mealId)
+        val favoriteMeal = favoriteMealService.addFavoriteMeal(userId, mealId).toFavoriteMealResponse()
         return ResponseEntity.ok(favoriteMeal)
     }
 
