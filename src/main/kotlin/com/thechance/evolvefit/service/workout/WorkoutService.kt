@@ -120,5 +120,11 @@ class WorkoutService(
                 }
             }
         }
+
+        fun getWorkoutFocusAreas(exercises: List<Exercise>): Set<BodyArea> {
+            val focusAreas = mutableSetOf<BodyArea>()
+            exercises.forEach { focusAreas.addAll(it.focusArea) }
+            return focusAreas
+        }
     }
 }

@@ -14,14 +14,11 @@ data class WorkoutResponse(
 )
 
 fun WorkoutEntity.toWorkoutResponse(): WorkoutResponse {
-    val focusAreas = mutableSetOf<BodyArea>()
-    exercises.forEach { focusAreas.addAll(it.focusArea) }
-
     return WorkoutResponse(
         id = id,
         name = name,
         durationSeconds = WorkoutService.calculateWorkoutDuration(exercises),
         imageUrl = imageUrl,
-        focusArea = focusAreas
+        focusArea = WorkoutService.getWorkoutFocusAreas(exercises)
     )
 }

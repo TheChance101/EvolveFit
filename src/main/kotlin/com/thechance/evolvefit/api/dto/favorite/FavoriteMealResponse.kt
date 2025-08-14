@@ -5,7 +5,7 @@ import com.thechance.evolvefit.service.entity.favorite.FavoriteMeal
 import java.util.*
 
 data class FavoriteMealResponse(
-    val id: UUID,
+    val mealId: UUID,
     val name: String,
     val mealType: MealType,
     val calories: Int,
@@ -13,7 +13,7 @@ data class FavoriteMealResponse(
 )
 
 fun FavoriteMeal.toFavoriteMealResponse() = FavoriteMealResponse(
-    id = id,
+    mealId = meal.id,
     name = meal.name,
     mealType = meal.type,
     calories = meal.calories,
