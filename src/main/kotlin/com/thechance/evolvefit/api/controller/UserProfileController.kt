@@ -1,10 +1,12 @@
 package com.thechance.evolvefit.api.controller
 
+import com.thechance.evolvefit.api.dto.profile.EditProfileRequest
 import com.thechance.evolvefit.api.dto.profile.UserProfileResponse
 import com.thechance.evolvefit.api.dto.profile.toUserProfileResponse
 import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.UserProfileService
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -20,6 +22,13 @@ class UserProfileController(
     fun getUserProfile(): ResponseEntity<UserProfileResponse> {
         val userId = JwtFilter.getUserId()
         val userProfile = imageUploadService.getUserProfile(userId).toUserProfileResponse()
+        return ResponseEntity.ok(userProfile)
+    }
+
+    @PutMapping
+    fun editUserProfile(@Valid @RequestBody editUserProfileRequest: EditProfileRequest): ResponseEntity<UserProfileResponse> {
+        val userId = JwtFilter.getUserId()
+        val userProfile = imageUploadService.editUserProfile(userId, editUserProfileRequest).toUserProfileResponse()
         return ResponseEntity.ok(userProfile)
     }
 
