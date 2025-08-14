@@ -30,4 +30,8 @@ class UserProfileService(
         user.imageUrl = imageUrl
         return imageUrl
     }
+
+    fun userExists(userId: UUID): Boolean {
+        return userRepository.existsById(userId)
+    }
 }
