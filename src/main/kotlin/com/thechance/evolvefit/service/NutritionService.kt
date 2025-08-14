@@ -78,6 +78,8 @@ class NutritionService(
     }
 
     fun addWaterIntake(userId: UUID, waterIntakeInLitre: Float) {
+        if (waterIntakeInLitre <= 0) throw IllegalArgumentException("Water intake must be greater than 0")
+
         val waterIntake = WaterInTakeHistory(
             userId = userId,
             date = LocalDateTime.now(),
