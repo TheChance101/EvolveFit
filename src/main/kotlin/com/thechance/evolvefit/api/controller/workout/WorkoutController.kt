@@ -55,4 +55,11 @@ class WorkoutController(
         workoutService.submitWorkout(userId, workoutHistoryRequest)
         return ResponseEntity.noContent().build()
     }
+
+    @GetMapping("/history")
+    fun getUserWorkoutsHistory(): ResponseEntity<List<WorkoutHistoryResponse>> {
+        val userId = JwtFilter.getUserId()
+        val workoutsHistory = workoutService.getUserWorkoutsHistory(userId)
+        return ResponseEntity.ok(workoutsHistory)
+    }
 }

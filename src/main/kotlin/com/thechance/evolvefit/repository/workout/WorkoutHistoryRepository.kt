@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface WorkoutHistoryRepository: JpaRepository<WorkoutHistory, UUID> {
+    fun findByUserId(userId: UUID): List<WorkoutHistory>
 }

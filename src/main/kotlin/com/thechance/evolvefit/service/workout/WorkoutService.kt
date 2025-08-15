@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.service.workout
 
 import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryRequest
+import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryResponse
 import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.workout.ExerciseRepository
@@ -83,6 +84,25 @@ class WorkoutService(
         )
 
         workoutHistoryRepository.save(workoutHistory)
+    }
+
+    fun getUserWorkoutsHistory(userId: UUID): List<WorkoutHistoryResponse> {
+        val workoutHistory = workoutHistoryRepository.findByUserId(userId)
+
+        val workoutIds = workoutHistory.map { it.workoutId }.distinct()
+        val workoutsMap = workoutRepository.findAllById(workoutIds).associateBy { it.id }
+
+        return workoutHistory.map { history ->
+            val workout = workoutsMap[history.workoutId] ?: throw IllegalStateException("Workout not found")
+            WorkoutHistoryResponse(
+                name = workout.name,
+                imageUrl = workout.imageUrl,
+                createdAt = history.createdAt,
+                exercisesCount = workout.exercises.count(),
+                durationSeconds = history.durationSeconds,
+                level = workout.level
+            )
+        }
     }
 
     private fun isExerciseMatchFocusArea(exercise: Exercise, focusArea: BodyArea?): Boolean {
