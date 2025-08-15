@@ -47,13 +47,17 @@ class NutritionService(
     fun getUserCalories(userId: UUID): CaloriesResponse {
         val start = LocalDate.now().atStartOfDay()
         val end = LocalDate.now().plusDays(1).atStartOfDay()
-        val caloriesConsumed = mealsHistoryRepository.sumUserCaloriesConsumed(userId, start, end) ?: 0
+        val caloriesConsumed = getCaloriesConsumed(userId, start, end)
         val totalCalories = getUserCaloriesNeeded(userId)
         return CaloriesResponse(totalCalories = totalCalories, caloriesConsumed = caloriesConsumed)
     }
 
+    fun getCaloriesConsumed(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): Int {
+        return mealsHistoryRepository.sumUserCaloriesConsumed(userId, startDate, endDate) ?: 0
+    }
+
     // BMR using Harris-Benedict equation
-    private fun getUserCaloriesNeeded(userId: UUID): Int {
+    fun getUserCaloriesNeeded(userId: UUID): Int {
         val userData = userRepository.findById(userId).orElseThrow()
 
         val bmr = when (userData.gender) {
@@ -92,9 +96,13 @@ class NutritionService(
     fun getWaterIntake(userId: UUID): WaterIntakeResponse {
         val start = LocalDate.now().atStartOfDay()
         val end = LocalDate.now().plusDays(1).atStartOfDay()
-        val waterConsumed = waterIntakeHistoryRepository.sumUserWaterIntake(userId, start, end) ?: 0.0f
+        val waterConsumed = getWaterConsumed(userId, start, end)
         val totalWater = getTotalWaterNeeded(userId)
         return WaterIntakeResponse(waterConsumed = waterConsumed, totalWater = totalWater)
+    }
+
+    fun getWaterConsumed(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): Float {
+        return waterIntakeHistoryRepository.sumUserWaterIntake(userId, startDate, endDate) ?: 0.0f
     }
 
     private fun getTotalWaterNeeded(userId: UUID): Float {

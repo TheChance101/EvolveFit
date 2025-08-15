@@ -1,19 +1,22 @@
 package com.thechance.evolvefit.service
 
 import com.thechance.evolvefit.repository.workout.WorkoutHistoryRepository
+import com.thechance.evolvefit.service.entity.NutritionStatistics
 import com.thechance.evolvefit.service.entity.WorkoutStatistics
 import com.thechance.evolvefit.service.entity.workout.BodyArea
 import com.thechance.evolvefit.service.entity.workout.WorkoutHistory
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
 class ReportService(
-    private val workoutHistoryRepository: WorkoutHistoryRepository
+    private val workoutHistoryRepository: WorkoutHistoryRepository,
+    private val nutritionService: NutritionService,
 ) {
 
-    fun getReport(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): WorkoutStatistics {
+    fun getWorkoutReport(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): WorkoutStatistics {
         val currentWeekWorkouts = workoutHistoryRepository.findAllWithWorkoutByUserId(userId, startDate, endDate)
 
         val totalTimeSpent = getTotalTimeSpent(currentWeekWorkouts)
@@ -77,5 +80,19 @@ class ReportService(
                 workoutsHistoryPerDay.value.sumOf { workout -> workout.durationSeconds}
             }
             .map { WorkoutStatistics.StatisticsByDay(it.key, it.value) }
+    }
+
+    fun getNutritionReport(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): NutritionStatistics {
+        val waterConsumed = nutritionService.getWaterConsumed(userId, startDate, endDate)
+        val caloriesConsumed = nutritionService.getCaloriesConsumed(userId, startDate, endDate)
+
+        val totalDays = ChronoUnit.DAYS.between(startDate, endDate).toInt()
+        val totalCalories = nutritionService.getUserCaloriesNeeded(userId) * totalDays
+
+        return NutritionStatistics(
+            totalCalories = totalCalories,
+            caloriesConsumed = caloriesConsumed,
+            waterConsumed = waterConsumed,
+        )
     }
 }
