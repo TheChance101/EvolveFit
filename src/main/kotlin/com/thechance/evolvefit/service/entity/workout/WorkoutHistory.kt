@@ -1,8 +1,6 @@
 package com.thechance.evolvefit.service.entity.workout
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.*
 
@@ -11,8 +9,9 @@ data class WorkoutHistory(
     @Id
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     val id: UUID = UUID.randomUUID(),
-    @Column(nullable = false)
-    val workoutId: UUID,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workout_id", nullable = false)
+    val workout: Workout,
     @Column(nullable = false)
     val userId: UUID,
     @Column(nullable = false)

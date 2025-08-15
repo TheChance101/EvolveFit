@@ -10,6 +10,7 @@ import com.thechance.evolvefit.repository.workout.WorkoutRepository
 import com.thechance.evolvefit.service.ImageService
 import com.thechance.evolvefit.service.entity.GymEquipment
 import com.thechance.evolvefit.service.entity.workout.*
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
@@ -21,7 +22,8 @@ class WorkoutService(
     private val exerciseRepository: ExerciseRepository,
     private val imageService: ImageService,
     private val userRepository: UserRepository,
-    private val workoutHistoryRepository: WorkoutHistoryRepository
+    private val workoutHistoryRepository: WorkoutHistoryRepository,
+    private val entityManager: EntityManager
 ) {
 
     fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): WorkoutEntity {
@@ -76,8 +78,10 @@ class WorkoutService(
     }
 
     fun submitWorkout(userId: UUID, workoutHistoryRequest: WorkoutHistoryRequest) {
+        val workoutReference = entityManager.getReference(Workout::class.java, workoutHistoryRequest.workoutId)
+
         val workoutHistory = WorkoutHistory(
-            workoutId = workoutHistoryRequest.workoutId,
+            workout = workoutReference,
             userId = userId,
             createdAt = LocalDateTime.now(),
             durationSeconds = workoutHistoryRequest.durationSeconds,
@@ -87,20 +91,16 @@ class WorkoutService(
     }
 
     fun getUserWorkoutsHistory(userId: UUID): List<WorkoutHistoryResponse> {
-        val workoutHistory = workoutHistoryRepository.findByUserId(userId)
-
-        val workoutIds = workoutHistory.map { it.workoutId }.distinct()
-        val workoutsMap = workoutRepository.findAllById(workoutIds).associateBy { it.id }
+        val workoutHistory = workoutHistoryRepository.findAllWithWorkoutByUserId(userId)
 
         return workoutHistory.map { history ->
-            val workout = workoutsMap[history.workoutId] ?: throw IllegalStateException("Workout not found")
             WorkoutHistoryResponse(
-                name = workout.name,
-                imageUrl = workout.imageUrl,
+                name = history.workout.name,
+                imageUrl = history.workout.imageUrl,
                 createdAt = history.createdAt,
-                exercisesCount = workout.exercises.count(),
+                exercisesCount = history.workout.exercises.count(),
                 durationSeconds = history.durationSeconds,
-                level = workout.level
+                level = history.workout.level
             )
         }
     }
