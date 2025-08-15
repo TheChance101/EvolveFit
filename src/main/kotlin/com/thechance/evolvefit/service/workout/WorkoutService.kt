@@ -1,6 +1,7 @@
 package com.thechance.evolvefit.service.workout
 
 import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryRequest
+import com.thechance.evolvefit.api.dto.workout.WorkoutHistoryResponse
 import com.thechance.evolvefit.api.dto.workout.WorkoutRequest
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.repository.workout.ExerciseRepository
@@ -9,6 +10,7 @@ import com.thechance.evolvefit.repository.workout.WorkoutRepository
 import com.thechance.evolvefit.service.ImageService
 import com.thechance.evolvefit.service.entity.GymEquipment
 import com.thechance.evolvefit.service.entity.workout.*
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
@@ -20,7 +22,8 @@ class WorkoutService(
     private val exerciseRepository: ExerciseRepository,
     private val imageService: ImageService,
     private val userRepository: UserRepository,
-    private val workoutHistoryRepository: WorkoutHistoryRepository
+    private val workoutHistoryRepository: WorkoutHistoryRepository,
+    private val entityManager: EntityManager
 ) {
 
     fun createWorkout(userId: UUID, workoutRequest: WorkoutRequest): WorkoutEntity {
@@ -75,14 +78,31 @@ class WorkoutService(
     }
 
     fun submitWorkout(userId: UUID, workoutHistoryRequest: WorkoutHistoryRequest) {
+        val workoutReference = entityManager.getReference(Workout::class.java, workoutHistoryRequest.workoutId)
+
         val workoutHistory = WorkoutHistory(
-            workoutId = workoutHistoryRequest.workoutId,
+            workout = workoutReference,
             userId = userId,
             createdAt = LocalDateTime.now(),
             durationSeconds = workoutHistoryRequest.durationSeconds,
         )
 
         workoutHistoryRepository.save(workoutHistory)
+    }
+
+    fun getUserWorkoutsHistory(userId: UUID): List<WorkoutHistoryResponse> {
+        val workoutHistory = workoutHistoryRepository.findAllWithWorkoutByUserId(userId)
+
+        return workoutHistory.map { history ->
+            WorkoutHistoryResponse(
+                name = history.workout.name,
+                imageUrl = history.workout.imageUrl,
+                createdAt = history.createdAt,
+                exercisesCount = history.workout.exercises.count(),
+                durationSeconds = history.durationSeconds,
+                level = history.workout.level
+            )
+        }
     }
 
     private fun isExerciseMatchFocusArea(exercise: Exercise, focusArea: BodyArea?): Boolean {
