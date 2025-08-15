@@ -13,7 +13,7 @@ import javax.crypto.SecretKey
 
 @Service
 class JwtService {
-    private val accessExpiration = Duration.ofMinutes(1)
+    private val accessExpiration = Duration.ofHours(1)
 
     @Value("\${jwt.secret-key}")
     private lateinit var secret: String
