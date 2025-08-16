@@ -4,6 +4,7 @@ import com.thechance.evolvefit.config.JwtFilter
 import com.thechance.evolvefit.service.ReportService
 import com.thechance.evolvefit.service.entity.NutritionStatistics
 import com.thechance.evolvefit.service.entity.WorkoutStatistics
+import com.thechance.evolvefit.service.entity.report.WorkoutProgress
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -37,5 +38,15 @@ class ReportController(
         val userId = JwtFilter.getUserId()
         val report = reportService.getNutritionReport(userId, startDate, endDate)
         return ResponseEntity.ok(report)
+    }
+
+    @GetMapping("/workoutProgress")
+    fun getUserWorkoutProgress(
+        @RequestParam startDate: LocalDateTime,
+        @RequestParam endDate: LocalDateTime,
+    ): ResponseEntity<WorkoutProgress> {
+        val userId = JwtFilter.getUserId()
+        val workoutProgress = reportService.getUserWorkoutProgress(userId, startDate, endDate)
+        return ResponseEntity.ok(workoutProgress)
     }
 }
