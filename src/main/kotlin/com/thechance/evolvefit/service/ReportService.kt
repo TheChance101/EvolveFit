@@ -3,6 +3,7 @@ package com.thechance.evolvefit.service
 import com.thechance.evolvefit.repository.workout.WorkoutHistoryRepository
 import com.thechance.evolvefit.service.entity.NutritionStatistics
 import com.thechance.evolvefit.service.entity.WorkoutStatistics
+import com.thechance.evolvefit.service.entity.report.WorkoutProgress
 import com.thechance.evolvefit.service.entity.workout.BodyArea
 import com.thechance.evolvefit.service.entity.workout.WorkoutHistory
 import org.springframework.stereotype.Service
@@ -93,6 +94,19 @@ class ReportService(
             totalCalories = totalCalories,
             caloriesConsumed = caloriesConsumed,
             waterConsumed = waterConsumed,
+        )
+    }
+
+    fun getUserWorkoutProgress(userId: UUID, startDate: LocalDateTime, endDate: LocalDateTime): WorkoutProgress {
+        val workouts = workoutHistoryRepository.findAllWithWorkoutByUserId(userId, startDate, endDate)
+
+        val workoutDays = workouts.map { it.createdAt.toLocalDate() }.toSet()
+        val totalDays = ChronoUnit.DAYS.between(startDate, endDate)
+        val activityPercentage = workoutDays.size / totalDays.toFloat()
+
+        return WorkoutProgress(
+            workoutDates = workoutDays,
+            activityPercentage = activityPercentage
         )
     }
 }
