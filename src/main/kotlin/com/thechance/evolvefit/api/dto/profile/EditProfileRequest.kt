@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min
 import java.time.LocalDate
 
 data class EditProfileRequest(
+    val fullName: String,
     val birthDate: LocalDate,
     val gender: Gender,
     val measurementType: MeasurementType,
