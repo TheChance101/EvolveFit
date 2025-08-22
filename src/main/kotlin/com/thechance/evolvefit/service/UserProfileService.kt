@@ -27,6 +27,7 @@ class UserProfileService(
         val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
 
         val updatedUser = user.copy(
+            name = editProfileRequest.fullName.trim(),
             birthday = editProfileRequest.birthDate,
             gender = editProfileRequest.gender,
             measurementType = editProfileRequest.measurementType,

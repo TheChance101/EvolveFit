@@ -1,5 +1,7 @@
 package com.thechance.evolvefit.config.exceptionHandling
 
+import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
+
+    private val logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleValidationException(ex: HttpMessageNotReadableException): ResponseEntity<ApiError> {
@@ -65,7 +69,9 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
+    fun handleAllOtherExceptions(ex: Exception, request: HttpServletRequest): ResponseEntity<ApiError> {
+        logger.error("Request failed: ${request.method} ${request.requestURI} | Error: ${ex.message}", ex)
+
         val apiError = ApiError(
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             exception = ex.javaClass.name,
