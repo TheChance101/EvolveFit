@@ -5,7 +5,9 @@ import com.thechance.evolvefit.repository.GymEquipmentsRepository
 import com.thechance.evolvefit.repository.UserRepository
 import com.thechance.evolvefit.service.entity.User
 import com.thechance.evolvefit.service.util.getUserHeight
+import com.thechance.evolvefit.service.util.getUserHeightByMeasurementType
 import com.thechance.evolvefit.service.util.getUserWeight
+import com.thechance.evolvefit.service.util.getUserWeightByMeasurementType
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -20,7 +22,10 @@ class UserProfileService(
 
     fun getUserProfile(userId: UUID): User {
         val user = userRepository.findById(userId).orElseThrow { throw IllegalStateException("User not found") }
-        return user
+        return user.copy(
+            weight = getUserWeightByMeasurementType(user.weight, user.measurementType),
+            height = getUserHeightByMeasurementType(user.height, user.measurementType)
+        )
     }
 
     fun editUserProfile(userId: UUID, editProfileRequest: EditProfileRequest): User {
@@ -40,7 +45,10 @@ class UserProfileService(
             } else emptyList(),
         )
 
-        return userRepository.save(updatedUser)
+        return userRepository.save(updatedUser).copy(
+            weight = getUserWeightByMeasurementType(user.weight, user.measurementType),
+            height = getUserHeightByMeasurementType(user.height, user.measurementType)
+        )
     }
 
     @Transactional
